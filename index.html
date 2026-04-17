@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Camera Upload</title>
+</head>
+<body>
+  <video id="video" autoplay playsinline style="width:100%"></video>
+  <button onclick="capture()">Ambil Foto</button>
+  <canvas id="canvas" style="display:none;"></canvas>
+
+  <script>
+    const video = document.getElementById('video');
+
+    // Auto buka kamera
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      });
+
+    function capture() {
+      const canvas = document.getElementById('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0);
+
+      const image = canvas.toDataURL('image/jpeg').split(',')[1];
+
+      upload(image);
+    }
+
+    function upload(image) {
+      fetch("https://script.google.com/macros/s/AKfycbzAa_W8Kiw8xZ2UiFlJAKju5TQwMDzQ1_J7aq-tc5_xgBR-MZXdxmQQj6LuJf5P_2ru/exec", {
+        method: "POST",
+        body: JSON.stringify({ image: image })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert("Upload berhasil!");
+      });
+    }
+  </script>
+</body>
+</html>
